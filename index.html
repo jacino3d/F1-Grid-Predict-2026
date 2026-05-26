@@ -256,30 +256,30 @@ const db = getFirestore(app);
 
 // ═══════════════ STATIC DATA ═══════════════════
 const RACES = [
-  { id:1,  name:'GP da Austrália',      track:'Albert Park',        date:'2026-03-08', canceled:false },
-  { id:2,  name:'GP da China',          track:'Shanghai',            date:'2026-03-15', canceled:false },
-  { id:3,  name:'GP do Japão',          track:'Suzuka',              date:'2026-03-29', canceled:false },
-  { id:4,  name:'GP do Bahrein',        track:'Sakhir',              date:'2026-04-12', canceled:true  },
-  { id:5,  name:'GP da Arábia Saudita', track:'Jeddah',              date:'2026-04-19', canceled:true  },
-  { id:6,  name:'GP de Miami',          track:'Miami',               date:'2026-05-03', canceled:false },
-  { id:7,  name:'GP do Canadá',         track:'Montreal',            date:'2026-05-24', canceled:false },
-  { id:8,  name:'GP de Mônaco',         track:'Monte Carlo',         date:'2026-06-07', canceled:false },
-  { id:9,  name:'GP de Barcelona',      track:'Barcelona-Catalunya', date:'2026-06-14', canceled:false },
-  { id:10, name:'GP da Áustria',        track:'Red Bull Ring',       date:'2026-06-28', canceled:false },
-  { id:11, name:'GP da Inglaterra',     track:'Silverstone',         date:'2026-07-05', canceled:false },
-  { id:12, name:'GP da Hungria',        track:'Hungaroring',         date:'2026-07-19', canceled:false },
-  { id:13, name:'GP da Bélgica',        track:'Spa-Francorchamps',   date:'2026-07-26', canceled:false },
-  { id:14, name:'GP da Holanda',        track:'Zandvoort',           date:'2026-08-23', canceled:false },
-  { id:15, name:'GP da Itália',         track:'Monza',               date:'2026-09-06', canceled:false },
-  { id:16, name:'GP de Madri',          track:'Madrid',              date:'2026-09-13', canceled:false },
-  { id:17, name:'GP do Azerbaijão',     track:'Baku',                date:'2026-09-27', canceled:false },
-  { id:18, name:'GP de Singapura',      track:'Marina Bay',          date:'2026-10-04', canceled:false },
-  { id:19, name:'GP dos EUA',           track:'Austin',              date:'2026-10-25', canceled:false },
-  { id:20, name:'GP da Cid. do México', track:'México City',         date:'2026-11-01', canceled:false },
-  { id:21, name:'GP de São Paulo',      track:'Interlagos',          date:'2026-11-15', canceled:false },
-  { id:22, name:'GP de Las Vegas',      track:'Las Vegas Strip',     date:'2026-11-21', canceled:false },
-  { id:23, name:'GP do Catar',          track:'Losail',              date:'2026-11-29', canceled:false },
-  { id:24, name:'GP de Abu Dhabi',      track:'Yas Marina',          date:'2026-12-06', canceled:false },
+  { id:1,  name:'GP da Austrália',      track:'Albert Park',        raceTime:'2026-03-08T01:00:00', canceled:false },
+  { id:2,  name:'GP da China',          track:'Shanghai',            raceTime:'2026-03-15T04:00:00', canceled:false },
+  { id:3,  name:'GP do Japão',          track:'Suzuka',              raceTime:'2026-03-29T02:00:00', canceled:false },
+  { id:4,  name:'GP do Bahrein',        track:'Sakhir',              raceTime:'2026-04-12T16:00:00', canceled:true  },
+  { id:5,  name:'GP da Arábia Saudita', track:'Jeddah',              raceTime:'2026-04-19T18:00:00', canceled:true  },
+  { id:6,  name:'GP de Miami',          track:'Miami',               raceTime:'2026-05-03T17:00:00', canceled:false },
+  { id:7,  name:'GP do Canadá',         track:'Montreal',            raceTime:'2026-05-24T17:00:00', canceled:false },
+  { id:8,  name:'GP de Mônaco',         track:'Monte Carlo',         raceTime:'2026-06-07T10:00:00', canceled:false },
+  { id:9,  name:'GP de Barcelona',      track:'Barcelona-Catalunya', raceTime:'2026-06-14T10:00:00', canceled:false },
+  { id:10, name:'GP da Áustria',        track:'Red Bull Ring',       raceTime:'2026-06-28T10:00:00', canceled:false },
+  { id:11, name:'GP da Inglaterra',     track:'Silverstone',         raceTime:'2026-07-05T11:00:00', canceled:false },
+  { id:12, name:'GP da Hungria',        track:'Hungaroring',         raceTime:'2026-07-19T10:00:00', canceled:false },
+  { id:13, name:'GP da Bélgica',        track:'Spa-Francorchamps',   raceTime:'2026-07-26T10:00:00', canceled:false },
+  { id:14, name:'GP da Holanda',        track:'Zandvoort',           raceTime:'2026-08-23T10:00:00', canceled:false },
+  { id:15, name:'GP da Itália',         track:'Monza',               raceTime:'2026-09-06T10:00:00', canceled:false },
+  { id:16, name:'GP de Madri',          track:'Madrid',              raceTime:'2026-09-13T10:00:00', canceled:false },
+  { id:17, name:'GP do Azerbaijão',     track:'Baku',                raceTime:'2026-09-27T08:00:00', canceled:false },
+  { id:18, name:'GP de Singapura',      track:'Marina Bay',          raceTime:'2026-10-04T09:00:00', canceled:false },
+  { id:19, name:'GP dos EUA',           track:'Austin',              raceTime:'2026-10-25T17:00:00', canceled:false },
+  { id:20, name:'GP da Cid. do México', track:'México City',         raceTime:'2026-11-01T17:00:00', canceled:false },
+  { id:21, name:'GP de São Paulo',      track:'Interlagos',          raceTime:'2026-11-15T14:00:00', canceled:false },
+  { id:22, name:'GP de Las Vegas',      track:'Las Vegas Strip',     raceTime:'2026-11-22T00:00:00', canceled:false },
+  { id:23, name:'GP do Catar',          track:'Losail',              raceTime:'2026-11-29T13:00:00', canceled:false },
+  { id:24, name:'GP de Abu Dhabi',      track:'Yas Marina',          raceTime:'2026-12-06T10:00:00', canceled:false },
 ];
 
 const DRIVERS = [
@@ -361,7 +361,7 @@ function isRaceLocked(raceId) {
   if (allResults[raceId]) return true;
   const race = RACES.find(r => r.id === parseInt(raceId));
   if (!race) return false;
-  return new Date() > new Date(race.date + 'T00:00:00');
+  return new Date() > new Date(race.raceTime);
 }
 
 function showToast(msg, type='') {
@@ -525,10 +525,13 @@ function onBetRaceChange() {
 
   // Race info
   if (race) {
-    const d = new Date(race.date + 'T12:00:00');
+    const d = new Date(race.raceTime);
+    const timeStr = d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const dateStr = d.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
     document.getElementById('betRaceInfo').innerHTML =
       `<div class="race-info-item"><div class="dot"></div>${race.track}</div>
-       <div class="race-info-item"><div class="dot"></div>${d.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}</div>`;
+       <div class="race-info-item"><div class="dot"></div>${dateStr}</div>
+       <div class="race-info-item"><div class="dot"></div>Largada: ${timeStr} BRT</div>`;
   }
 
   document.getElementById('lockedNotice').classList.toggle('hidden', !locked);
@@ -637,9 +640,10 @@ function renderStandings() {
 // ═══════════════ RESULTADOS TAB ═════════════════
 function populateResultsSelect() {
   const sel = document.getElementById('resultsRaceSelect');
-  sel.innerHTML = RACES.filter(r => !r.canceled).map(r => {
+  sel.innerHTML = RACES.map(r => {
     const has = allResults[r.id] ? '✓ ' : '';
-    return `<option value="${r.id}">${has}Etapa ${r.id}: ${r.name}</option>`;
+    const label = r.canceled ? ' — CANCELADA' : '';
+    return `<option value="${r.id}" ${r.canceled?'disabled':''}>${has}Etapa ${r.id}: ${r.name}${label}</option>`;
   }).join('');
   const last = [...RACES].reverse().find(r => !r.canceled && allResults[r.id]);
   if (last) sel.value = last.id;
@@ -703,9 +707,10 @@ window.onResultsRaceChange = onResultsRaceChange;
 // ═══════════════ ADMIN ══════════════════════════
 function renderAdmin() {
   const sel = document.getElementById('adminRaceSelect');
-  sel.innerHTML = RACES.filter(r => !r.canceled).map(r => {
+  sel.innerHTML = RACES.map(r => {
     const has = allResults[r.id] ? '✓ ' : '';
-    return `<option value="${r.id}">${has}Etapa ${r.id}: ${r.name}</option>`;
+    const label = r.canceled ? ' — CANCELADA' : '';
+    return `<option value="${r.id}" ${r.canceled?'disabled':''}>${has}Etapa ${r.id}: ${r.name}${label}</option>`;
   }).join('');
   const next = RACES.find(r => !r.canceled && !allResults[r.id]);
   if (next) sel.value = next.id;
