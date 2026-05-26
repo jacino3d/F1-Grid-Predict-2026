@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F1 Grid Predict 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #E10600; --red-dark: #a00400; --bg: #0f0f0f; --surface: #1a1a1a;
+    --surface2: #222; --surface3: #2a2a2a; --border: #333; --text: #f0f0f0;
+    --text-muted: #888; --green: #00c853; --gold: #FFD700;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Barlow',sans-serif; min-height:100vh; }
+
+  /* HEADER */
+  .header { background:#111; border-bottom:3px solid var(--red); padding:0 20px; display:flex; align-items:center; justify-content:space-between; height:56px; position:sticky; top:0; z-index:100; }
+  .logo { display:flex; align-items:center; gap:10px; }
+  .logo-f1 { background:var(--red); color:#fff; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:18px; padding:3px 8px; }
+  .logo-text { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:20px; letter-spacing:2px; text-transform:uppercase; }
+  .user-pill { background:var(--surface2); border:1px solid var(--border); border-radius:20px; padding:5px 14px; font-size:13px; display:flex; align-items:center; gap:8px; cursor:pointer; }
+  .user-dot { width:8px; height:8px; border-radius:50%; background:var(--green); }
+
+  /* LOGIN SCREEN */
+  .login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:32px; padding:24px; }
+  .login-logo { text-align:center; }
+  .login-logo .logo-f1 { font-size:32px; padding:8px 16px; display:inline-block; margin-bottom:8px; }
+  .login-logo h1 { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:36px; letter-spacing:4px; }
+  .login-logo p { color:var(--text-muted); font-size:13px; letter-spacing:2px; margin-top:4px; }
+  .player-cards { display:flex; flex-direction:column; gap:12px; width:100%; max-width:340px; }
+  .player-card { background:var(--surface); border:2px solid var(--border); border-radius:12px; padding:20px 24px; display:flex; align-items:center; gap:16px; cursor:pointer; transition:all .2s; }
+  .player-card:hover { border-color:var(--red); background:#1f1f1f; transform:translateY(-2px); }
+  .player-avatar { width:48px; height:48px; border-radius:50%; background:var(--red); display:flex; align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:20px; flex-shrink:0; }
+  .player-card-name { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:22px; letter-spacing:1px; }
+  .player-card-sub { font-size:12px; color:var(--text-muted); }
+  .player-card-pts { margin-left:auto; text-align:right; }
+  .player-card-pts .pts { font-family:'Barlow Condensed',sans-serif; font-size:24px; font-weight:900; }
+  .player-card-pts .pts-label { font-size:10px; color:var(--text-muted); letter-spacing:1px; }
+
+  /* TABS */
+  .tabs { background:#111; border-bottom:1px solid var(--border); display:flex; padding:0 20px; }
+  .tab { padding:14px 18px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; color:var(--text-muted); border-bottom:3px solid transparent; transition:all .2s; display:flex; align-items:center; gap:7px; white-space:nowrap; }
+  .tab:hover { color:var(--text); }
+  .tab.active { color:#fff; border-bottom-color:var(--red); }
+
+  /* MAIN */
+  .main { max-width:900px; margin:0 auto; padding:24px 16px; }
+  .section-title { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:22px; letter-spacing:3px; text-transform:uppercase; margin-bottom:6px; }
+  .section-sub { font-size:12px; color:var(--text-muted); letter-spacing:1px; margin-bottom:24px; }
+
+  /* RACE SELECTOR */
+  .race-selector { margin-bottom:20px; }
+  .race-selector label { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:8px; }
+  select { width:100%; background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:6px; padding:13px 16px; font-family:'Barlow Condensed',sans-serif; font-size:17px; font-weight:700; cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='2' fill='none'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 16px center; }
+  .race-info { display:flex; gap:16px; margin-top:8px; flex-wrap:wrap; }
+  .race-info-item { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-muted); }
+  .race-info-item .dot { width:6px; height:6px; border-radius:50%; background:var(--red); }
+
+  /* POSITIONS */
+  .positions-grid { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+  .position-row { background:var(--surface); border:1px solid var(--border); border-radius:8px; display:flex; align-items:center; gap:14px; padding:12px 16px; }
+  .pos-badge { width:44px; height:44px; border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; flex-shrink:0; }
+  .pos-badge.p1 { background:linear-gradient(135deg,#b8860b,#FFD700); color:#000; }
+  .pos-badge.p2 { background:linear-gradient(135deg,#999,#C0C0C0); color:#000; }
+  .pos-badge.p3 { background:linear-gradient(135deg,#8B4513,#CD7F32); color:#fff; }
+  .pos-badge.p4, .pos-badge.p5 { background:var(--surface3); color:#ccc; }
+  .pos-badge .pos-label { font-size:16px; font-weight:900; line-height:1; }
+  .pos-badge .pos-pts { font-size:10px; font-weight:600; opacity:.8; }
+  .pos-select { flex:1; font-size:14px; padding:10px 12px; font-family:'Barlow',sans-serif; background:var(--surface2); }
+  .pos-select:focus { outline:none; border-color:var(--red); }
+
+  /* BUTTONS */
+  .submit-btn { width:100%; padding:16px; background:var(--red); color:#fff; border:none; border-radius:8px; font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:16px; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+  .submit-btn:hover:not(:disabled) { background:var(--red-dark); }
+  .submit-btn:disabled { background:#333; color:#666; cursor:not-allowed; }
+  .submit-btn.saved { background:#0a2a0a; border:1px solid var(--green); color:var(--green); }
+
+  /* NOTICES */
+  .locked-notice { background:#1a1000; border:1px solid #4a3000; border-radius:8px; padding:14px 18px; display:flex; align-items:center; gap:10px; color:#ffaa00; font-size:13px; margin-bottom:16px; }
+  .saved-notice { background:#0a1a0a; border:1px solid #1a4a1a; border-radius:8px; padding:14px 18px; color:var(--green); font-size:13px; margin-bottom:16px; }
+
+  /* STANDINGS */
+  .standings-list { display:flex; flex-direction:column; gap:10px; }
+  .standing-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px 20px; display:flex; align-items:center; gap:16px; }
+  .standing-card.me { border-color:var(--red); background:linear-gradient(90deg,#1a0000,var(--surface)); }
+  .rank-circle { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:18px; flex-shrink:0; }
+  .rank-1 { background:linear-gradient(135deg,#b8860b,#FFD700); color:#000; }
+  .rank-2 { background:linear-gradient(135deg,#777,#C0C0C0); color:#000; }
+  .rank-3 { background:linear-gradient(135deg,#7a3f0a,#CD7F32); color:#fff; }
+  .rank-other { background:var(--surface3); color:var(--text-muted); }
+  .standing-name { flex:1; font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:700; }
+  .you-badge { font-size:10px; color:var(--red); font-weight:600; letter-spacing:2px; margin-left:8px; }
+  .standing-pts { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:900; }
+  .standing-pts-label { font-size:11px; color:var(--text-muted); letter-spacing:1px; }
+
+  /* RESULTS */
+  .results-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media(max-width:600px) { .results-grid { grid-template-columns:1fr; } }
+  .result-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; }
+  .result-card-title { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px; }
+  .result-list { display:flex; flex-direction:column; gap:8px; }
+  .result-item { display:flex; align-items:center; gap:10px; }
+  .result-pos { width:32px; height:32px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:13px; flex-shrink:0; }
+  .result-driver { flex:1; font-size:13px; }
+  .result-pts-tag { font-size:12px; font-weight:600; }
+  .correct { color:var(--green); }
+  .wrong { color:var(--text-muted); }
+  .race-total { margin-top:12px; padding-top:10px; border-top:1px solid var(--border); font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:900; }
+
+  /* ADMIN */
+  .admin-section { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:20px; margin-bottom:20px; }
+  .admin-title { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:2px; color:var(--text-muted); margin-bottom:14px; text-transform:uppercase; }
+  .admin-row { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .admin-label { width:50px; font-size:12px; color:var(--text-muted); flex-shrink:0; }
+  .admin-select { flex:1; font-size:13px; padding:9px 12px; font-family:'Barlow',sans-serif; background:var(--surface2); }
+  .btn { padding:12px 20px; border:none; border-radius:6px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:2px; cursor:pointer; transition:all .2s; }
+  .btn-red { background:var(--red); color:#fff; }
+  .btn-red:hover { background:var(--red-dark); }
+  .btn-ghost { background:var(--surface3); color:var(--text); border:1px solid var(--border); }
+  .btn-ghost:hover { background:#333; }
+
+  /* LOADING */
+  .loading { display:flex; align-items:center; justify-content:center; gap:10px; padding:40px; color:var(--text-muted); font-size:14px; }
+  .spinner { width:20px; height:20px; border:2px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin .7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(100px); background:#222; border:1px solid var(--border); color:#fff; padding:12px 24px; border-radius:8px; font-size:14px; z-index:999; transition:transform .3s; box-shadow:0 4px 20px rgba(0,0,0,.5); pointer-events:none; }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+  .toast.success { border-color:var(--green); color:var(--green); }
+  .toast.error { border-color:var(--red); color:#ff6b6b; }
+
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+  .divider { height:1px; background:var(--border); margin:20px 0; }
+  .empty-state { text-align:center; padding:40px; color:var(--text-muted); font-size:14px; }
+  .hidden { display:none !important; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-screen">
+    <div class="login-logo">
+      <div class="logo-f1">F1</div>
+      <h1>GRID PREDICT</h1>
+      <p>TEMPORADA 2026 · QUEM É VOCÊ?</p>
+    </div>
+    <div class="player-cards" id="playerCards">
+      <div class="loading"><div class="spinner"></div> Carregando...</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="appScreen" class="hidden">
+  <div class="header">
+    <div class="logo">
+      <span class="logo-f1">F1</span>
+      <span class="logo-text">Grid Predict</span>
+    </div>
+    <div class="user-pill" onclick="logout()">
+      <div class="user-dot"></div>
+      <span id="headerUser">—</span>
+      <span style="color:var(--text-muted);font-size:11px">✕ sair</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('palpites')" id="tab-palpites">📋 PALPITES</div>
+    <div class="tab" onclick="showTab('classificacao')" id="tab-classificacao">🏆 CLASSIFICAÇÃO</div>
+    <div class="tab" onclick="showTab('resultados')" id="tab-resultados">🏁 RESULTADOS</div>
+    <div class="tab" onclick="showTab('admin')" id="tab-admin">⚙️</div>
+  </div>
+
+  <div class="main">
+
+    <!-- PALPITES -->
+    <div class="tab-content active" id="tab-content-palpites">
+      <div class="section-title">Fazer Palpite</div>
+      <div class="section-sub">ESCOLHA OS 5 PRIMEIROS COLOCADOS</div>
+      <div class="race-selector">
+        <label>Corrida</label>
+        <select id="betRaceSelect" onchange="onBetRaceChange()"></select>
+        <div class="race-info" id="betRaceInfo"></div>
+      </div>
+      <div id="lockedNotice" class="locked-notice hidden">⏱ Palpites encerrados — corrida já iniciada.</div>
+      <div id="savedNotice" class="saved-notice hidden"></div>
+      <div class="positions-grid" id="positionsGrid"></div>
+      <button class="submit-btn" id="submitBtn" onclick="submitBet()">CONFIRMAR PALPITE</button>
+    </div>
+
+    <!-- CLASSIFICAÇÃO -->
+    <div class="tab-content" id="tab-content-classificacao">
+      <div class="section-title">Classificação da Liga</div>
+      <div class="section-sub">RANKING MULTIPLAYER AO VIVO</div>
+      <div id="standingsList"><div class="loading"><div class="spinner"></div> Carregando...</div></div>
+      <div class="divider"></div>
+      <div class="section-title" style="font-size:16px;margin-bottom:14px">Por Corrida</div>
+      <div id="raceBreakdown"></div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div class="tab-content" id="tab-content-resultados">
+      <div class="section-title">Resultados</div>
+      <div class="section-sub">RESULTADO OFICIAL E PALPITES</div>
+      <div class="race-selector">
+        <label>Corrida</label>
+        <select id="resultsRaceSelect" onchange="onResultsRaceChange()"></select>
+      </div>
+      <div id="resultsContent"></div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="tab-content" id="tab-content-admin">
+      <div class="section-title">Admin</div>
+      <div class="section-sub">REGISTRAR RESULTADO OFICIAL</div>
+      <div class="admin-section">
+        <div class="admin-title">Registrar Resultado</div>
+        <div class="admin-row">
+          <span class="admin-label">Corrida</span>
+          <select class="admin-select" id="adminRaceSelect" onchange="onAdminRaceChange()" style="flex:1"></select>
+        </div>
+        <div id="adminResultRows"></div>
+        <div style="margin-top:14px;display:flex;gap:10px">
+          <button class="btn btn-red" onclick="saveAdminResult()">💾 SALVAR RESULTADO</button>
+          <button class="btn btn-ghost" onclick="clearAdminResult()">🗑 LIMPAR</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ═══════════════ FIREBASE CONFIG ═══════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyBuPIBFy3-A052XjgQ2vLmD519xJI_deNw",
+  authDomain: "f1-grid-predict-2026.firebaseapp.com",
+  projectId: "f1-grid-predict-2026",
+  storageBucket: "f1-grid-predict-2026.firebasestorage.app",
+  messagingSenderId: "788988535310",
+  appId: "1:788988535310:web:8e4f9af5ff07ea90ae925f"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ═══════════════ STATIC DATA ═══════════════════
+const RACES = [
+  { id:1,  name:'GP da Austrália',      track:'Albert Park',        date:'2026-03-08', canceled:false },
+  { id:2,  name:'GP da China',          track:'Shanghai',            date:'2026-03-15', canceled:false },
+  { id:3,  name:'GP do Japão',          track:'Suzuka',              date:'2026-03-29', canceled:false },
+  { id:4,  name:'GP do Bahrein',        track:'Sakhir',              date:'2026-04-12', canceled:true  },
+  { id:5,  name:'GP da Arábia Saudita', track:'Jeddah',              date:'2026-04-19', canceled:true  },
+  { id:6,  name:'GP de Miami',          track:'Miami',               date:'2026-05-03', canceled:false },
+  { id:7,  name:'GP do Canadá',         track:'Montreal',            date:'2026-05-24', canceled:false },
+  { id:8,  name:'GP de Mônaco',         track:'Monte Carlo',         date:'2026-06-07', canceled:false },
+  { id:9,  name:'GP de Barcelona',      track:'Barcelona-Catalunya', date:'2026-06-14', canceled:false },
+  { id:10, name:'GP da Áustria',        track:'Red Bull Ring',       date:'2026-06-28', canceled:false },
+  { id:11, name:'GP da Inglaterra',     track:'Silverstone',         date:'2026-07-05', canceled:false },
+  { id:12, name:'GP da Hungria',        track:'Hungaroring',         date:'2026-07-19', canceled:false },
+  { id:13, name:'GP da Bélgica',        track:'Spa-Francorchamps',   date:'2026-07-26', canceled:false },
+  { id:14, name:'GP da Holanda',        track:'Zandvoort',           date:'2026-08-23', canceled:false },
+  { id:15, name:'GP da Itália',         track:'Monza',               date:'2026-09-06', canceled:false },
+  { id:16, name:'GP de Madri',          track:'Madrid',              date:'2026-09-13', canceled:false },
+  { id:17, name:'GP do Azerbaijão',     track:'Baku',                date:'2026-09-27', canceled:false },
+  { id:18, name:'GP de Singapura',      track:'Marina Bay',          date:'2026-10-04', canceled:false },
+  { id:19, name:'GP dos EUA',           track:'Austin',              date:'2026-10-25', canceled:false },
+  { id:20, name:'GP da Cid. do México', track:'México City',         date:'2026-11-01', canceled:false },
+  { id:21, name:'GP de São Paulo',      track:'Interlagos',          date:'2026-11-15', canceled:false },
+  { id:22, name:'GP de Las Vegas',      track:'Las Vegas Strip',     date:'2026-11-21', canceled:false },
+  { id:23, name:'GP do Catar',          track:'Losail',              date:'2026-11-29', canceled:false },
+  { id:24, name:'GP de Abu Dhabi',      track:'Yas Marina',          date:'2026-12-06', canceled:false },
+];
+
+const DRIVERS = [
+  'Max Verstappen','Lando Norris','Charles Leclerc','Carlos Sainz','Lewis Hamilton',
+  'George Russell','Fernando Alonso','Lance Stroll','Oscar Piastri','Andrea Kimi Antonelli',
+  'Nico Hülkenberg','Kevin Magnussen','Valtteri Bottas','Zhou Guanyu','Pierre Gasly',
+  'Esteban Ocon','Alexander Albon','Logan Sargeant','Yuki Tsunoda','Liam Lawson',
+  'Oliver Bearman','Isack Hadjar','Jack Doohan','Gabriel Bortoleto',
+];
+
+const POINTS = [10,7,5,3,1];
+const POS_LABELS = ['P1','P2','P3','P4','P5'];
+const POS_CLASSES = ['p1','p2','p3','p4','p5'];
+const PLAYERS = ['John','Renan','Ronaldo'];
+const AVATARS = { John:'JC', Renan:'RE', Ronaldo:'RO' };
+const AVATAR_COLORS = { John:'#E10600', Renan:'#2979ff', Ronaldo:'#00c853' };
+
+// SEED DATA — historical results & predictions
+const SEED_PREDICTIONS = {
+  1: {
+    John:    ['George Russell','Max Verstappen','Fernando Alonso','Carlos Sainz','Oscar Piastri'],
+    Ronaldo: ['George Russell','Fernando Alonso','Max Verstappen','Carlos Sainz','Oscar Piastri'],
+    Renan:   ['George Russell','Andrea Kimi Antonelli','Max Verstappen','Carlos Sainz','Lando Norris'],
+  },
+  2: {
+    John:    ['George Russell','Lewis Hamilton','Oscar Piastri','Charles Leclerc','Andrea Kimi Antonelli'],
+    Ronaldo: ['George Russell','Andrea Kimi Antonelli','Charles Leclerc','Lewis Hamilton','Lando Norris'],
+    Renan:   ['George Russell','Andrea Kimi Antonelli','Lewis Hamilton','Charles Leclerc','Oscar Piastri'],
+  },
+  3: {
+    John:    ['George Russell','Andrea Kimi Antonelli','Oscar Piastri','Lando Norris','Charles Leclerc'],
+    Ronaldo: ['George Russell','Andrea Kimi Antonelli','Charles Leclerc','Lewis Hamilton','Lando Norris'],
+    Renan:   ['Andrea Kimi Antonelli','George Russell','Charles Leclerc','Oscar Piastri','Lewis Hamilton'],
+  },
+  6: {
+    John:    ['Andrea Kimi Antonelli','Max Verstappen','Lando Norris','George Russell','Charles Leclerc'],
+    Ronaldo: ['Andrea Kimi Antonelli','Charles Leclerc','Max Verstappen','George Russell','Lando Norris'],
+    Renan:   ['Andrea Kimi Antonelli','Lando Norris','Max Verstappen','George Russell','Oscar Piastri'],
+  },
+  7: {
+    John:    ['George Russell','Andrea Kimi Antonelli','Lando Norris','Lewis Hamilton','Oscar Piastri'],
+    Ronaldo: ['George Russell','Lando Norris','Andrea Kimi Antonelli','Oscar Piastri','Lewis Hamilton'],
+    Renan:   ['Andrea Kimi Antonelli','George Russell','Charles Leclerc','Oscar Piastri','Lewis Hamilton'],
+  },
+};
+
+const SEED_RESULTS = {
+  1: ['George Russell','Andrea Kimi Antonelli','Charles Leclerc','Lewis Hamilton','Lando Norris'],
+  2: ['Andrea Kimi Antonelli','George Russell','Lewis Hamilton','Charles Leclerc','Oliver Bearman'],
+  6: ['Andrea Kimi Antonelli','Lando Norris','Max Verstappen','George Russell','Oscar Piastri'],
+  7: ['Andrea Kimi Antonelli','Lewis Hamilton','Max Verstappen','Charles Leclerc','Isack Hadjar'],
+};
+
+// ═══════════════ STATE ══════════════════════════
+let currentUser = null;
+let allPredictions = {};  // { raceId: { player: [d1..d5] } }
+let allResults = {};      // { raceId: [d1..d5] }
+let unsubResults = null;
+let unsubPredictions = null;
+
+// ═══════════════ HELPERS ════════════════════════
+function calcScore(pred, result) {
+  if (!pred || !result) return 0;
+  return result.reduce((pts, driver, i) => pts + (pred[i] === driver ? POINTS[i] : 0), 0);
+}
+
+function getPlayerTotals() {
+  return PLAYERS.map(player => {
+    const total = Object.keys(allResults).reduce((sum, rid) => {
+      const result = allResults[rid];
+      const pred = allPredictions[rid]?.[player];
+      return sum + calcScore(pred, result);
+    }, 0);
+    return { player, total };
+  }).sort((a,b) => b.total - a.total);
+}
+
+function isRaceLocked(raceId) {
+  if (allResults[raceId]) return true;
+  const race = RACES.find(r => r.id === parseInt(raceId));
+  if (!race) return false;
+  return new Date() > new Date(race.date + 'T00:00:00');
+}
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 2800);
+}
+
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-content-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'classificacao') renderStandings();
+  if (name === 'resultados') renderResultsTab();
+  if (name === 'admin') renderAdmin();
+}
+
+window.showTab = showTab;
+
+// ═══════════════ FIRESTORE OPS ══════════════════
+async function seedFirestore() {
+  // Only seed if no data exists yet
+  const snap = await getDoc(doc(db, 'meta', 'seeded'));
+  if (snap.exists()) return;
+
+  const batch = [];
+  for (const [raceId, players] of Object.entries(SEED_PREDICTIONS)) {
+    for (const [player, picks] of Object.entries(players)) {
+      batch.push(setDoc(doc(db, 'predictions', `${raceId}_${player}`), {
+        raceId: parseInt(raceId), player, picks, updatedAt: Date.now()
+      }));
+    }
+  }
+  for (const [raceId, result] of Object.entries(SEED_RESULTS)) {
+    batch.push(setDoc(doc(db, 'results', String(raceId)), {
+      raceId: parseInt(raceId), result, updatedAt: Date.now()
+    }));
+  }
+  batch.push(setDoc(doc(db, 'meta', 'seeded'), { at: Date.now() }));
+  await Promise.all(batch);
+}
+
+async function loadAll() {
+  // Load predictions
+  const predSnap = await getDocs(collection(db, 'predictions'));
+  allPredictions = {};
+  predSnap.forEach(d => {
+    const { raceId, player, picks } = d.data();
+    if (!allPredictions[raceId]) allPredictions[raceId] = {};
+    allPredictions[raceId][player] = picks;
+  });
+
+  // Load results
+  const resSnap = await getDocs(collection(db, 'results'));
+  allResults = {};
+  resSnap.forEach(d => {
+    const { raceId, result } = d.data();
+    allResults[raceId] = result;
+  });
+}
+
+function subscribeToData() {
+  // Live results listener
+  if (unsubResults) unsubResults();
+  unsubResults = onSnapshot(collection(db, 'results'), snap => {
+    snap.docChanges().forEach(change => {
+      const { raceId, result } = change.doc.data();
+      if (change.type === 'removed') delete allResults[raceId];
+      else allResults[raceId] = result;
+    });
+    // Refresh current tab if standings/results visible
+    const activeTab = document.querySelector('.tab.active')?.id?.replace('tab-','');
+    if (activeTab === 'classificacao') renderStandings();
+    if (activeTab === 'resultados') renderResultsTab();
+    if (activeTab === 'palpites') onBetRaceChange();
+  });
+
+  // Live predictions listener
+  if (unsubPredictions) unsubPredictions();
+  unsubPredictions = onSnapshot(collection(db, 'predictions'), snap => {
+    snap.docChanges().forEach(change => {
+      const { raceId, player, picks } = change.doc.data();
+      if (!allPredictions[raceId]) allPredictions[raceId] = {};
+      if (change.type === 'removed') delete allPredictions[raceId][player];
+      else allPredictions[raceId][player] = picks;
+    });
+    const activeTab = document.querySelector('.tab.active')?.id?.replace('tab-','');
+    if (activeTab === 'classificacao') renderStandings();
+    if (activeTab === 'palpites') onBetRaceChange();
+  });
+}
+
+// ═══════════════ LOGIN ══════════════════════════
+async function init() {
+  await seedFirestore();
+  await loadAll();
+  renderLoginScreen();
+}
+
+function renderLoginScreen() {
+  const totals = getPlayerTotals();
+  const container = document.getElementById('playerCards');
+  container.innerHTML = totals.map(({ player, total }) => `
+    <div class="player-card" onclick="loginAs('${player}')">
+      <div class="player-avatar" style="background:${AVATAR_COLORS[player]}">${AVATARS[player]}</div>
+      <div>
+        <div class="player-card-name">${player}</div>
+        <div class="player-card-sub">Toque para entrar</div>
+      </div>
+      <div class="player-card-pts">
+        <div class="pts">${total}</div>
+        <div class="pts-label">PTS</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loginAs(player) {
+  currentUser = player;
+  document.getElementById('headerUser').textContent = player.toUpperCase();
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('appScreen').classList.remove('hidden');
+  subscribeToData();
+  populateBetRaceSelect();
+  populateResultsSelect();
+  onBetRaceChange();
+}
+
+function logout() {
+  currentUser = null;
+  if (unsubResults) unsubResults();
+  if (unsubPredictions) unsubPredictions();
+  document.getElementById('appScreen').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  renderLoginScreen();
+  showTab('palpites');
+}
+
+window.loginAs = loginAs;
+window.logout = logout;
+
+// ═══════════════ PALPITES TAB ═══════════════════
+function populateBetRaceSelect() {
+  const sel = document.getElementById('betRaceSelect');
+  sel.innerHTML = RACES.filter(r => !r.canceled).map(r =>
+    `<option value="${r.id}">Etapa ${r.id}: ${r.name}</option>`
+  ).join('');
+  // Default to next unresulted race
+  const next = RACES.find(r => !r.canceled && !allResults[r.id]);
+  if (next) sel.value = next.id;
+  onBetRaceChange();
+}
+
+function onBetRaceChange() {
+  const raceId = parseInt(document.getElementById('betRaceSelect').value);
+  const race = RACES.find(r => r.id === raceId);
+  const locked = isRaceLocked(raceId);
+  const myPicks = allPredictions[raceId]?.[currentUser];
+
+  // Race info
+  if (race) {
+    const d = new Date(race.date + 'T12:00:00');
+    document.getElementById('betRaceInfo').innerHTML =
+      `<div class="race-info-item"><div class="dot"></div>${race.track}</div>
+       <div class="race-info-item"><div class="dot"></div>${d.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}</div>`;
+  }
+
+  document.getElementById('lockedNotice').classList.toggle('hidden', !locked);
+
+  const savedNotice = document.getElementById('savedNotice');
+  if (myPicks && !locked) {
+    savedNotice.classList.remove('hidden');
+    savedNotice.textContent = `✓ Palpite salvo: ${myPicks.join(' · ')}`;
+  } else {
+    savedNotice.classList.add('hidden');
+  }
+
+  renderPositionsGrid(raceId, locked, myPicks);
+
+  const btn = document.getElementById('submitBtn');
+  if (locked) {
+    btn.disabled = true;
+    btn.className = 'submit-btn';
+    btn.textContent = 'PALPITES ENCERRADOS';
+  } else if (myPicks) {
+    btn.disabled = false;
+    btn.className = 'submit-btn saved';
+    btn.textContent = '✓ ATUALIZAR PALPITE';
+  } else {
+    btn.disabled = false;
+    btn.className = 'submit-btn';
+    btn.textContent = 'CONFIRMAR PALPITE';
+  }
+}
+
+function renderPositionsGrid(raceId, locked, existing) {
+  document.getElementById('positionsGrid').innerHTML = POS_LABELS.map((label, i) => {
+    const opts = DRIVERS.map(d =>
+      `<option value="${d}" ${existing?.[i]===d?'selected':''}>${d}</option>`
+    ).join('');
+    return `<div class="position-row">
+      <div class="pos-badge ${POS_CLASSES[i]}">
+        <span class="pos-label">${label}</span>
+        <span class="pos-pts">+${POINTS[i]}pts</span>
+      </div>
+      <select class="pos-select" id="pos${i}" ${locked?'disabled':''}>
+        <option value="">Selecione o Piloto...</option>${opts}
+      </select>
+    </div>`;
+  }).join('');
+}
+
+async function submitBet() {
+  const raceId = parseInt(document.getElementById('betRaceSelect').value);
+  const picks = [];
+  for (let i = 0; i < 5; i++) {
+    const val = document.getElementById('pos'+i).value;
+    if (!val) { showToast('Selecione todos os 5 pilotos!', 'error'); return; }
+    if (picks.includes(val)) { showToast('Piloto duplicado!', 'error'); return; }
+    picks.push(val);
+  }
+  try {
+    await setDoc(doc(db, 'predictions', `${raceId}_${currentUser}`), {
+      raceId, player: currentUser, picks, updatedAt: Date.now()
+    });
+    if (!allPredictions[raceId]) allPredictions[raceId] = {};
+    allPredictions[raceId][currentUser] = picks;
+    showToast('✓ Palpite salvo!', 'success');
+    onBetRaceChange();
+  } catch(e) {
+    showToast('Erro ao salvar. Tente novamente.', 'error');
+  }
+}
+
+window.onBetRaceChange = onBetRaceChange;
+window.submitBet = submitBet;
+
+// ═══════════════ STANDINGS ══════════════════════
+function renderStandings() {
+  const totals = getPlayerTotals();
+  const rankClasses = ['rank-1','rank-2','rank-3'];
+  document.getElementById('standingsList').innerHTML = totals.map((p, i) => `
+    <div class="standing-card ${p.player===currentUser?'me':''}">
+      <div class="rank-circle ${rankClasses[i]||'rank-other'}">${i+1}</div>
+      <div class="standing-name">
+        ${p.player}
+        ${p.player===currentUser?'<span class="you-badge">VOCÊ</span>':''}
+      </div>
+      <div style="text-align:right">
+        <div class="standing-pts">${p.total}</div>
+        <div class="standing-pts-label">PTS</div>
+      </div>
+    </div>
+  `).join('');
+
+  const finished = RACES.filter(r => !r.canceled && allResults[r.id]);
+  document.getElementById('raceBreakdown').innerHTML = finished.length === 0
+    ? '<div class="empty-state">Nenhum resultado ainda.</div>'
+    : finished.map(race => {
+        const result = allResults[race.id];
+        const cols = PLAYERS.map(player => {
+          const pts = calcScore(allPredictions[race.id]?.[player], result);
+          return `<span style="color:${pts>0?'var(--green)':'var(--text-muted)'};font-weight:600;min-width:90px;display:inline-block">${player}: +${pts}pts</span>`;
+        }).join('');
+        return `<div style="font-size:13px;padding:9px 0;border-bottom:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <span style="color:var(--text-muted);min-width:170px">Etapa ${race.id}: ${race.name}</span>${cols}
+        </div>`;
+      }).join('');
+}
+
+// ═══════════════ RESULTADOS TAB ═════════════════
+function populateResultsSelect() {
+  const sel = document.getElementById('resultsRaceSelect');
+  sel.innerHTML = RACES.filter(r => !r.canceled).map(r => {
+    const has = allResults[r.id] ? '✓ ' : '';
+    return `<option value="${r.id}">${has}Etapa ${r.id}: ${r.name}</option>`;
+  }).join('');
+  const last = [...RACES].reverse().find(r => !r.canceled && allResults[r.id]);
+  if (last) sel.value = last.id;
+  onResultsRaceChange();
+}
+
+function onResultsRaceChange() {
+  const raceId = parseInt(document.getElementById('resultsRaceSelect').value);
+  const result = allResults[raceId];
+  const container = document.getElementById('resultsContent');
+
+  if (!result) {
+    container.innerHTML = '<div class="empty-state">⏳ Resultado ainda não registrado.</div>';
+    return;
+  }
+
+  const officialCard = `<div class="result-card">
+    <div class="result-card-title">🏁 Top 5 Oficial</div>
+    <div class="result-list">${result.map((driver, i) => `
+      <div class="result-item">
+        <div class="result-pos ${POS_CLASSES[i]}">${POS_LABELS[i]}</div>
+        <div class="result-driver">${driver}</div>
+        <div class="result-pts-tag" style="color:var(--text-muted)">+${POINTS[i]}pts</div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+
+  const playerCards = PLAYERS.map(player => {
+    const pred = allPredictions[raceId]?.[player];
+    const total = calcScore(pred, result);
+    const isMe = player === currentUser;
+    if (!pred) return `<div class="result-card" style="${isMe?'border-color:var(--red)':''}">
+      <div class="result-card-title">👤 ${player}${isMe?' <span style="color:var(--red);font-size:10px">VOCÊ</span>':''}</div>
+      <div style="color:var(--text-muted);font-size:13px;padding:8px 0">Sem palpite</div>
+      <div class="race-total" style="color:var(--text-muted)">+0 PTS</div>
+    </div>`;
+
+    return `<div class="result-card" style="${isMe?'border-color:var(--red);background:linear-gradient(135deg,#1a0000,var(--surface))':''}">
+      <div class="result-card-title">👤 ${player}${isMe?' <span style="color:var(--red);font-size:10px">VOCÊ</span>':''}</div>
+      <div class="result-list">${pred.map((driver, i) => {
+        const correct = driver === result[i];
+        return `<div class="result-item">
+          <div class="result-pos ${POS_CLASSES[i]}">${POS_LABELS[i]}</div>
+          <div class="result-driver ${correct?'correct':''}">${driver}</div>
+          <div class="result-pts-tag ${correct?'correct':'wrong'}">${correct?'+'+POINTS[i]+'pts':'—'}</div>
+        </div>`;
+      }).join('')}</div>
+      <div class="race-total" style="color:${total>0?'var(--green)':'var(--text-muted)'}">+${total} PTS</div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `<div class="results-grid">${officialCard}${playerCards}</div>`;
+}
+
+function renderResultsTab() {
+  populateResultsSelect();
+}
+
+window.onResultsRaceChange = onResultsRaceChange;
+
+// ═══════════════ ADMIN ══════════════════════════
+function renderAdmin() {
+  const sel = document.getElementById('adminRaceSelect');
+  sel.innerHTML = RACES.filter(r => !r.canceled).map(r => {
+    const has = allResults[r.id] ? '✓ ' : '';
+    return `<option value="${r.id}">${has}Etapa ${r.id}: ${r.name}</option>`;
+  }).join('');
+  const next = RACES.find(r => !r.canceled && !allResults[r.id]);
+  if (next) sel.value = next.id;
+  onAdminRaceChange();
+}
+
+function onAdminRaceChange() {
+  const raceId = parseInt(document.getElementById('adminRaceSelect').value);
+  const existing = allResults[raceId] || [];
+  document.getElementById('adminResultRows').innerHTML = POS_LABELS.map((label, i) => {
+    const opts = DRIVERS.map(d =>
+      `<option value="${d}" ${existing[i]===d?'selected':''}>${d}</option>`
+    ).join('');
+    return `<div class="admin-row">
+      <span class="admin-label">${label}</span>
+      <select class="admin-select" id="adminPos${i}" style="flex:1">
+        <option value="">— Selecione —</option>${opts}
+      </select>
+    </div>`;
+  }).join('');
+}
+
+async function saveAdminResult() {
+  const raceId = parseInt(document.getElementById('adminRaceSelect').value);
+  const picks = [];
+  for (let i = 0; i < 5; i++) {
+    const val = document.getElementById('adminPos'+i).value;
+    if (!val) { showToast('Preencha todos os 5 lugares!', 'error'); return; }
+    if (picks.includes(val)) { showToast('Piloto duplicado!', 'error'); return; }
+    picks.push(val);
+  }
+  try {
+    await setDoc(doc(db, 'results', String(raceId)), {
+      raceId, result: picks, updatedAt: Date.now()
+    });
+    allResults[raceId] = picks;
+    showToast('✓ Resultado salvo!', 'success');
+    renderAdmin();
+  } catch(e) {
+    showToast('Erro ao salvar!', 'error');
+  }
+}
+
+async function clearAdminResult() {
+  const raceId = parseInt(document.getElementById('adminRaceSelect').value);
+  if (!confirm('Limpar resultado desta corrida?')) return;
+  try {
+    await setDoc(doc(db, 'results', String(raceId)), {
+      raceId, result: null, updatedAt: Date.now()
+    });
+    delete allResults[raceId];
+    showToast('Resultado removido.', '');
+    renderAdmin();
+  } catch(e) {
+    showToast('Erro!', 'error');
+  }
+}
+
+window.onAdminRaceChange = onAdminRaceChange;
+window.saveAdminResult = saveAdminResult;
+window.clearAdminResult = clearAdminResult;
+
+// ═══════════════ BOOT ═══════════════════════════
+init().catch(e => {
+  document.getElementById('playerCards').innerHTML =
+    `<div style="color:#ff6b6b;text-align:center;padding:20px">
+      ❌ Erro ao conectar ao Firebase.<br>
+      <small style="color:var(--text-muted)">${e.message}</small>
+    </div>`;
+});
+</script>
+</body>
+</html>
