@@ -35,3 +35,24 @@ test('next-race selection skips an old event that has no stored result', () => {
   context.allResults = { 17: ['result'] };
   assert.equal(context.getNextOpenRace(new Date('2026-10-04T05:00:00')).id, 18);
 });
+
+test('calendar update preserves existing Firestore race IDs and results', () => {
+  const existingRaceIds = {
+    Australia: 1,
+    Miami: 6,
+    Canada: 7,
+    Hungary: 12,
+    Belgium: 13,
+    Azerbaijan: 17,
+    Singapore: 18,
+    AbuDhabi: 24
+  };
+  for (const [name, id] of Object.entries(existingRaceIds)) {
+    assert.equal(context.RACES.find(race => race.id === id).id, id, `${name} must retain its stored ID`);
+  }
+
+  const storedResults = { 1: ['winner'], 6: ['winner'], 17: ['winner'], 18: ['winner'] };
+  context.allResults = storedResults;
+  context.getNextOpenRace(new Date('2026-10-03T12:00:00'));
+  assert.deepEqual(context.allResults, storedResults, 'selecting the next race must not alter stored results');
+});
